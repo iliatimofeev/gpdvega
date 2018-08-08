@@ -9,7 +9,7 @@ python:
 
 env:
   global:
-    - TEST_DIR=/tmp/_altair/
+    - TEST_DIR=/tmp/_gpdvega/
 
 before_install:
   - pip install pip --upgrade;
@@ -20,4 +20,4 @@ install:
 script:
   - flake8 ./;
   - mkdir -p $TEST_DIR
-  - cd $TEST_DIR && python -m pytest --pyargs --doctest-modules altair;
+  - cd $TEST_DIR && python -m pytest --pyargs --doctest-modules gpdvega;
