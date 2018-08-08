@@ -8,14 +8,17 @@ test :
 
 
 test-coverage:
-	python -m pytest --pyargs --doctest-modules --cov=altair --cov-report term gpdvega
+	python -m pytest --pyargs --doctest-modules --cov=gpdvega --cov-report term gpdvega
 
 test-coverage-html:
-	python -m pytest --pyargs --doctest-modules --cov=altair --cov-report html gpdvega
+	python -m pytest --pyargs --doctest-modules --cov=gpdvega --cov-report html gpdvega
+
+help:
+	 $(MAKE) -C doc publish
 
 publish:
-	rm -r dist build
+	rm -rf dist build
 	python setup.py sdist bdist_wheel
-	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+	twine upload dist/*
 
 

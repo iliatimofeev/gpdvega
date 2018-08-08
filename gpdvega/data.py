@@ -9,7 +9,7 @@ def geopandas_to_dict(data):
     try:
         if ('geometry' != data.geometry.name) and ('geometry' in data.columns):
             warnings.warn(
-                "column name 'geometry' is reserved name for " +
+                "Column name 'geometry' is reserved name for " +
                 "GeoDataFrame. Column named 'geometry' should contain " +
                 "actual displaying geometry or not be used. Data of column " +
                 "will not be accessible from the chart description. "
@@ -26,6 +26,8 @@ def geopandas_to_dict(data):
                 "index values. Data of column 'id' will not be accessible " +
                 "from the chart description."
             )
+        if data.crs:
+            data = data.to_crs(epsg=4326)
         return [dict(
                     row,
                     type=feature['type'],
