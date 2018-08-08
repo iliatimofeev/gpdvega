@@ -81,7 +81,7 @@ DOWNLOAD_URL        = 'https://github.com/iliatimofeev/gpdvega'
 LICENSE             = 'BSD 3-clause'
 INSTALL_REQUIRES    = get_install_requirements("requirements.txt")
 DEV_REQUIRES        = get_install_requirements("requirements_dev.txt")
-VERSION             = version('gpdvega/__init__.py')
+VERSION             = version(os.path.join(NAME, '__init__.py'))
 
 
 setup(name=NAME,
@@ -108,4 +108,4 @@ setup(name=NAME,
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6'],
-     )
+)
