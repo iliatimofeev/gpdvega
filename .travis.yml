@@ -21,3 +21,5 @@ script:
   - flake8 ./;
   - mkdir -p $TEST_DIR
   - cd $TEST_DIR && python -m pytest --pyargs --doctest-modules gpdvega;
+after_success:
+  - coveralls
