@@ -1,5 +1,6 @@
 import altair as alt
 import geopandas as gpd
+import six
 import json
 import warnings
 from toolz.curried import curry
@@ -65,3 +66,45 @@ alt.data_transformers.register(
     lambda data: alt.pipe(data, alt.limit_rows, gpd_to_values)
 )
 alt.data_transformers.enable('gpd_to_values')
+
+
+def geojson_feature(data, feature='features', **kwargs):
+    """A convenience function for extracting features from a geojson object or url
+
+    Parameters
+    ----------
+    data : anyOf(string, geojson.GeoJSON)
+        string is interpreted as URL from which to load the data set.
+        geojson.GeoJSON is interpreted as data set itself.
+
+    feature : string
+        The JSON property containing the GeoJSON object set to convert to
+          a GeoJSON feature collection. For example ``features[0].geometry``.
+
+    **kwargs :
+        additional keywords passed to JsonDataFormat
+
+    """
+    if isinstance(data, six.string_types):
+        return alt.UrlData(
+                    url=data,
+                    format=alt.JsonDataFormat(
+                        type='json',
+                        property=feature,
+                        **kwargs
+                    )
+                )
+    elif hasattr(data, '__geo_interface__'):
+        if isinstance(data, gpd.GeoDataFrame):
+            data = alt.utils.sanitize_dataframe(data)
+        return alt.InlineData(
+                    values=data.__geo_interface__,
+                    format=alt.JsonDataFormat(
+                        type='json',
+                        property=feature,
+                        **kwargs
+                    )
+                )
+    else:
+        warnings.warn("data of type {0} not recognized".format(type(data)))
+        return data

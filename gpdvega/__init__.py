@@ -1,11 +1,13 @@
 # flake8: noqa
 __version__ = '0.0.1dev0'
 
-from .data import (
-    gpd_to_values
+from .geodata import (
+    gpd_to_values,
+    geojson_feature
 )
 
 
 __all__ = (
-    'gpd_to_values'
+    'gpd_to_values',
+    'geojson_feature'
 )

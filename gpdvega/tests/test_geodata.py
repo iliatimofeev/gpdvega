@@ -78,6 +78,12 @@ def _create_geojson():
             }
 
 
+def _create_fake_geo_interface():
+    class FakeGeoJSON:
+        __geo_interface__ = _create_geojson()
+    return FakeGeoJSON()
+
+
 def geojson2gdp(obj):
     return gpd.GeoDataFrame(
         [g["properties"] for g in obj["features"]],
@@ -130,3 +136,43 @@ def test_gpd_to_values_warnings():
 def test_gpd_to_values_pd():
     data = pd.DataFrame(pd.np.arange(3), columns=['param'])
     assert(gpdvega.gpd_to_values(data) == alt.to_values(data))
+
+
+def test_geojson_feature():
+
+    def Chart(data, **arg):
+        return alt.Chart(
+                        gpdvega.geojson_feature(data, 'test_prop')
+                ).mark_geoshape().project().encode(**arg)
+    # Fake GeoInterface
+    data = _create_fake_geo_interface()
+    dct = Chart(data).to_dict()
+
+    assert dct['data']['format'] == {'type': 'json', 'property': 'test_prop'}
+    assert dct['data']['values'] == data.__geo_interface__
+
+    # url
+    data = "url.json"
+    dct = Chart(data).to_dict()
+
+    assert dct['data']['format'] == {'type': 'json', 'property': 'test_prop'}
+    assert dct['data']['url'] == data
+
+    # GeoPandas
+
+    data = geojson2gdp(_create_geojson())
+    dct = Chart(data).to_dict()
+
+    assert dct['data']['format'] == {'type': 'json', 'property': 'test_prop'}
+
+    assert json.dumps(dct['data']['values'], sort_keys=True) == \
+        json.dumps(data.__geo_interface__, sort_keys=True)
+
+    # GeoPandas sanitize_dataframe
+    data['time'] = pd.date_range('2018-01-01', periods=data.index.size)
+    dct = Chart(data).to_dict()
+
+
+def test_geojson_feature_warn():
+    with pytest.warns(UserWarning, match="data of type"):
+        gpdvega.geojson_feature(555)
