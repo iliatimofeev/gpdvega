@@ -3,6 +3,7 @@ pytest
 pytest-cov
 jinja2
 sphinx
+coveralls
 
 
 
