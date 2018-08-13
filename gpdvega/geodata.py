@@ -52,7 +52,8 @@ def geopandas_to_dict(data):
 
 @curry
 def gpd_to_values(data):
-    """Replace a DataFrame by a data model with values."""
+    """Replace a GeoDataFrame by a data model with values.
+    Columns values stored as Foreign Members of GeoJSON feature objects"""
     if isinstance(data, gpd.GeoDataFrame):
         data = alt.utils.sanitize_dataframe(data)
         values = geopandas_to_dict(data)
@@ -61,10 +62,27 @@ def gpd_to_values(data):
         return alt.to_values(data)
 
 
+@curry
+def gpd_to_json(data):
+    """Write the data model to a .json file and return a url based data model.
+    Columns values stored as Foreign Members of GeoJSON feature objects"""
+    if isinstance(data, gpd.GeoDataFrame):
+        data = alt.utils.sanitize_dataframe(data)
+        values = geopandas_to_dict(data)
+        return alt.to_json({'values': values})
+    else:
+        return alt.to_json(data)
+
+
 alt.data_transformers.register(
     'gpd_to_values',
     lambda data: alt.pipe(data, alt.limit_rows, gpd_to_values)
 )
+alt.data_transformers.register(
+    'gpd_to_json',
+    lambda data: alt.pipe(data, alt.limit_rows, gpd_to_json)
+)
+
 alt.data_transformers.enable('gpd_to_values')
 
 

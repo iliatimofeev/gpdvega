@@ -97,15 +97,16 @@ def test_default_pipe():
     assert(alt.data_transformers.active == 'gpd_to_values')
 
 
+# to_values
 def test_gpd_to_values():
 
     data = _create_geojson()
     for a, b in zip(
                 json.loads(gpdvega.gpd_to_values(geojson2gdp(data))['values']),
                 data['features']):
-        assert (a['id'] == b['id'])
-        assert (a['prop'] == b['properties']['prop'])
-        assert (a['geometry'] == b['geometry'])
+        assert a['id'] == b['id']
+        assert a['prop'] == b['properties']['prop']
+        assert a['geometry'] == b['geometry']
 
 
 def test_gpd_to_values_no_geom():
@@ -116,7 +117,7 @@ def test_gpd_to_values_no_geom():
         for a, b in zip(
                         json.loads(gpdvega.gpd_to_values(data)['values']),
                         data.param.tolist()):
-                assert (a['param'] == b)
+                assert a['param'] == b
 
 
 def test_gpd_to_values_warnings():
@@ -135,9 +136,30 @@ def test_gpd_to_values_warnings():
 
 def test_gpd_to_values_pd():
     data = pd.DataFrame(pd.np.arange(3), columns=['param'])
-    assert(gpdvega.gpd_to_values(data) == alt.to_values(data))
+    assert gpdvega.gpd_to_values(data) == alt.to_values(data)
 
 
+# to_json
+def test_gpd_to_json_pd():
+    data = pd.DataFrame(pd.np.arange(3), columns=['param'])
+    assert gpdvega.gpd_to_json(data) == alt.to_json(data)
+
+
+def test_gpd_to_json():
+
+    data = _create_geojson()
+    r = gpdvega.gpd_to_json(geojson2gdp(data))
+    with open(r['url']) as fp:
+        rvalues = json.load(fp)
+        for a, b in zip(
+                    rvalues,
+                    data['features']):
+            assert a['id'] == b['id']
+            assert a['prop'] == b['properties']['prop']
+            assert a['geometry'] == b['geometry']
+
+
+# geojson_feature
 def test_geojson_feature():
 
     def Chart(data, **arg):
