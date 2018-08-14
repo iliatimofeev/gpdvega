@@ -10,10 +10,13 @@ except ImportError:
     from distutils.core import setup
 
 LONG_DESCRIPTION = """
-gpdVega: GeoPandas_ support for Altair_
-
-.. _Altair: http://altair-viz.github.io/
+``gpdvega`` is a bridge between GeoPandas_ a geospatial extension of Pandas_ 
+and the declarative statistical visualization library Altair_, 
+which allows to seamlessly chart geospatial data.
+The source is available on `GitHub <https://github.com/iliatimofeev/gpdvega>`_. 
+.. _Pandas: http://pandas.pydata.org/
 .. _GeoPandas: http://geopandas.org/
+.. _Altair: http://altair-viz.github.io/
 """
 
 
@@ -100,7 +103,7 @@ setup(name=NAME,
         'dev': DEV_REQUIRES
       },
       classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 3 - Alpha',
         'Environment :: Console',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',

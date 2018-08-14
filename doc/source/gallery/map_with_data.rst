@@ -22,7 +22,7 @@ This is a layered geographic visualization that shows population by country in A
     alt.hconcat(
         alt.Chart().mark_bar().encode(
             x=alt.X('pop_est', scale=alt.Scale(nice=False)),
-            y=alt.Y('name', sort=alt.SortField(field='pop_est', 
+            y=alt.Y('name', sort=alt.EncodingSortField(field='pop_est', 
                                                 op='sum', order='descending')),
             tooltip=['name','pop_est','gdp_md_est'],
             color=alt.condition(brush, alt.value('lightgray'), color)

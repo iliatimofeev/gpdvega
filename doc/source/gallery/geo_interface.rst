@@ -15,6 +15,7 @@ for list of other supported object see `manifest <https://gist.github.com/sgilli
     import gpdvega 
 
     alt.renderers.enable('notebook') # render for Jupyter Notebook
+    alt.data_transformers.enable(consolidate_datasets=False) # altair issue #1091
 
     world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
 

@@ -168,14 +168,16 @@ def test_geojson_feature():
                 ).mark_geoshape().project().encode(**arg)
     # Fake GeoInterface
     data = _create_fake_geo_interface()
-    dct = Chart(data).to_dict()
+    with alt.data_transformers.enable(consolidate_datasets=False):
+        dct = Chart(data).to_dict()
 
     assert dct['data']['format'] == {'type': 'json', 'property': 'test_prop'}
     assert dct['data']['values'] == data.__geo_interface__
 
     # url
     data = "url.json"
-    dct = Chart(data).to_dict()
+    with alt.data_transformers.enable(consolidate_datasets=False):
+        dct = Chart(data).to_dict()
 
     assert dct['data']['format'] == {'type': 'json', 'property': 'test_prop'}
     assert dct['data']['url'] == data
@@ -183,7 +185,8 @@ def test_geojson_feature():
     # GeoPandas
 
     data = geojson2gdp(_create_geojson())
-    dct = Chart(data).to_dict()
+    with alt.data_transformers.enable(consolidate_datasets=False):
+        dct = Chart(data).to_dict()
 
     assert dct['data']['format'] == {'type': 'json', 'property': 'test_prop'}
 
@@ -192,7 +195,8 @@ def test_geojson_feature():
 
     # GeoPandas sanitize_dataframe
     data['time'] = pd.date_range('2018-01-01', periods=data.index.size)
-    dct = Chart(data).to_dict()
+    with alt.data_transformers.enable(consolidate_datasets=False):
+        dct = Chart(data).to_dict()
 
 
 def test_geojson_feature_warn():
