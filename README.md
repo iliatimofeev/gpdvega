@@ -25,7 +25,7 @@ alt.Chart(world[world.continent!='Antarctica']).mark_geoshape(
 )
 ~~~
 
-![output](docs\_static\word_pop_est.png)
+![output](docs/_static/word_pop_est.png)
 
 ## Install
 
