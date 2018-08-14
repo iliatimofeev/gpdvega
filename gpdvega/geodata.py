@@ -53,7 +53,9 @@ def geopandas_to_dict(data):
 @curry
 def gpd_to_values(data):
     """Replace a GeoDataFrame by a data model with values.
-    Columns values stored as Foreign Members of GeoJSON feature objects"""
+    For ``geopandas.GeoDataFrame`` columns values are stored as Foreign Members
+    of GeoJSON feature objects. For all other types uses function
+    :py:func:`altair.to_values`."""
     if isinstance(data, gpd.GeoDataFrame):
         data = alt.utils.sanitize_dataframe(data)
         values = geopandas_to_dict(data)
@@ -65,7 +67,9 @@ def gpd_to_values(data):
 @curry
 def gpd_to_json(data):
     """Write the data model to a .json file and return a url based data model.
-    Columns values stored as Foreign Members of GeoJSON feature objects"""
+    For ``geopandas.GeoDataFrame`` columns values are stored as Foreign Members
+    of GeoJSON feature objects. For all other types uses function
+    :py:func:`altair.to_json`."""
     if isinstance(data, gpd.GeoDataFrame):
         data = alt.utils.sanitize_dataframe(data)
         values = geopandas_to_dict(data)
@@ -91,15 +95,14 @@ def geojson_feature(data, feature='features', **kwargs):
 
     Parameters
     ----------
+
     data : anyOf(string, geojson.GeoJSON)
         string is interpreted as URL from which to load the data set.
         geojson.GeoJSON is interpreted as data set itself.
-
     feature : string
         The JSON property containing the GeoJSON object set to convert to
           a GeoJSON feature collection. For example ``features[0].geometry``.
-
-    **kwargs :
+    \**kwargs :
         additional keywords passed to JsonDataFormat
 
     """

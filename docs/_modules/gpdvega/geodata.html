@@ -1,0 +1,346 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>gpdvega.geodata &mdash; gpdvega 0.1.0.dev0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/altair-plot.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/theme_overrides.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> gpdvega
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Examples (<code class="docutils literal notranslate"><span class="pre">geopandas</span></code> and <code class="docutils literal notranslate"><span class="pre">altair</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/API.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../whats_new.html">Whats new</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gpdvega</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>gpdvega.geodata</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gpdvega.geodata</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">altair</span> <span class="k">as</span> <span class="nn">alt</span>
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">import</span> <span class="nn">six</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">toolz.curried</span> <span class="k">import</span> <span class="n">curry</span>
+
+
+<span class="k">def</span> <span class="nf">geopandas_to_dict</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;geometry&#39;</span> <span class="o">!=</span> <span class="n">data</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;geometry&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Column name &#39;geometry&#39; is reserved name for &quot;</span> <span class="o">+</span>
+                <span class="s2">&quot;GeoDataFrame. Column named &#39;geometry&#39; should contain &quot;</span> <span class="o">+</span>
+                <span class="s2">&quot;actual displaying geometry or not be used. Data of column &quot;</span> <span class="o">+</span>
+                <span class="s2">&quot;will not be accessible from the chart description. &quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;type&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Column name &#39;type&#39; is reserved name for GeoDataFrame. &quot;</span> <span class="o">+</span>
+                <span class="s2">&quot;Data of column &#39;type&#39; will not be accessible from the &quot;</span> <span class="o">+</span>
+                <span class="s2">&quot;chart description.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;id&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Column name &#39;id&#39; is reserved name for GeoDataFrame for &quot;</span> <span class="o">+</span>
+                <span class="s2">&quot;index values. Data of column &#39;id&#39; will not be accessible &quot;</span> <span class="o">+</span>
+                <span class="s2">&quot;from the chart description.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">crs</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="n">epsg</span><span class="o">=</span><span class="mi">4326</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">row</span><span class="p">,</span>
+                    <span class="nb">type</span><span class="o">=</span><span class="n">feature</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span>
+                    <span class="n">geometry</span><span class="o">=</span><span class="n">feature</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">],</span>
+                    <span class="nb">id</span><span class="o">=</span><span class="n">feature</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+                    <span class="p">)</span> <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">feature</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                            <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
+                                <span class="n">data</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+                            <span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s1">&#39;row&#39;</span><span class="p">),</span>
+                            <span class="n">data</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">__geo_interface__</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">]</span>
+                        <span class="p">)</span>
+                <span class="p">]</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;No geometry data set yet&#39;</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;GeoDataFrame has no geometry to display.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s1">&#39;row&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span>
+
+
+<div class="viewcode-block" id="gpd_to_values"><a class="viewcode-back" href="../../user_guide/API.html#gpdvega.gpd_to_values">[docs]</a><span class="nd">@curry</span>
+<span class="k">def</span> <span class="nf">gpd_to_values</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Replace a GeoDataFrame by a data model with values.</span>
+<span class="sd">    For ``geopandas.GeoDataFrame`` columns values are stored as Foreign Members </span>
+<span class="sd">    of GeoJSON feature objects. For all other types uses function</span>
+<span class="sd">    :py:func:`altair.to_values`.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">alt</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">sanitize_dataframe</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">geopandas_to_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;values&#39;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">values</span><span class="p">)}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">alt</span><span class="o">.</span><span class="n">to_values</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="gpd_to_json"><a class="viewcode-back" href="../../user_guide/API.html#gpdvega.gpd_to_json">[docs]</a><span class="nd">@curry</span>
+<span class="k">def</span> <span class="nf">gpd_to_json</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Write the data model to a .json file and return a url based data model.</span>
+<span class="sd">    For ``geopandas.GeoDataFrame`` columns values are stored as Foreign Members </span>
+<span class="sd">    of GeoJSON feature objects. For all other types uses function</span>
+<span class="sd">    :py:func:`altair.to_json`.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">alt</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">sanitize_dataframe</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">geopandas_to_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">alt</span><span class="o">.</span><span class="n">to_json</span><span class="p">({</span><span class="s1">&#39;values&#39;</span><span class="p">:</span> <span class="n">values</span><span class="p">})</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">alt</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<span class="n">alt</span><span class="o">.</span><span class="n">data_transformers</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+    <span class="s1">&#39;gpd_to_values&#39;</span><span class="p">,</span>
+    <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="n">alt</span><span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alt</span><span class="o">.</span><span class="n">limit_rows</span><span class="p">,</span> <span class="n">gpd_to_values</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">alt</span><span class="o">.</span><span class="n">data_transformers</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
+    <span class="s1">&#39;gpd_to_json&#39;</span><span class="p">,</span>
+    <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="n">alt</span><span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alt</span><span class="o">.</span><span class="n">limit_rows</span><span class="p">,</span> <span class="n">gpd_to_json</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">alt</span><span class="o">.</span><span class="n">data_transformers</span><span class="o">.</span><span class="n">enable</span><span class="p">(</span><span class="s1">&#39;gpd_to_values&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="geojson_feature"><a class="viewcode-back" href="../../user_guide/API.html#gpdvega.geojson_feature">[docs]</a><span class="k">def</span> <span class="nf">geojson_feature</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="s1">&#39;features&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A convenience function for extracting features from a geojson object or url</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    data : anyOf(string, geojson.GeoJSON)</span>
+<span class="sd">        string is interpreted as URL from which to load the data set.</span>
+<span class="sd">        geojson.GeoJSON is interpreted as data set itself.</span>
+<span class="sd">    feature : string</span>
+<span class="sd">        The JSON property containing the GeoJSON object set to convert to</span>
+<span class="sd">          a GeoJSON feature collection. For example ``features[0].geometry``.</span>
+<span class="sd">    \**kwargs :</span>
+<span class="sd">        additional keywords passed to JsonDataFormat</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">alt</span><span class="o">.</span><span class="n">UrlData</span><span class="p">(</span>
+                    <span class="n">url</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                    <span class="nb">format</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">JsonDataFormat</span><span class="p">(</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">,</span>
+                        <span class="nb">property</span><span class="o">=</span><span class="n">feature</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">kwargs</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;__geo_interface__&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">alt</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">sanitize_dataframe</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">alt</span><span class="o">.</span><span class="n">InlineData</span><span class="p">(</span>
+                    <span class="n">values</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">__geo_interface__</span><span class="p">,</span>
+                    <span class="nb">format</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">JsonDataFormat</span><span class="p">(</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">,</span>
+                        <span class="nb">property</span><span class="o">=</span><span class="n">feature</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">kwargs</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;data of type </span><span class="si">{0}</span><span class="s2"> not recognized&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, ilia timofeev.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1.0.dev0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@3"></script>
+      <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@2"></script>
+      <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@3"></script>
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

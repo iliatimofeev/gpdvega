@@ -1,0 +1,329 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Data transformers &mdash; gpdvega 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/altair-plot.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API" href="API.html" />
+    <link rel="prev" title="Working with __geo_interface__" href="../gallery/geo_interface.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> gpdvega
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Examples of usage <code class="docutils literal notranslate"><span class="pre">geopandas</span></code> with <code class="docutils literal notranslate"><span class="pre">altair</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data transformers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#built-in-data-transformers">Built-in data transformers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#piping">Piping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#managing-data-transformers">Managing data transformers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="API.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../whats_new.html">Whats new</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">gpdvega</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Data transformers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/user_guide/data_transformers.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="data-transformers">
+<span id="id1"></span><h1>Data transformers<a class="headerlink" href="#data-transformers" title="Permalink to this headline">¶</a></h1>
+<p>Before a Vega-Lite or Vega specification can be passed to a renderer, it typically
+has to be transformed in a number of ways:</p>
+<ul class="simple">
+<li>Pandas Dataframe has to be sanitized and serialized to JSON.</li>
+<li>The rows of a Dataframe might need to be sampled or limited to a maximum number.</li>
+<li>The Dataframe might be written to a <code class="docutils literal notranslate"><span class="pre">.csv</span></code> of <code class="docutils literal notranslate"><span class="pre">.json</span></code> file for performance
+reasons.</li>
+</ul>
+<p>These data transformations are managed by the data transformation API of Altair.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The data transformation API of Altair should not be confused with the <code class="docutils literal notranslate"><span class="pre">transform</span></code>
+API of Vega and Vega-Lite.</p>
+</div>
+<p>A data transformer is a Python function that takes a Vega-Lite data <code class="docutils literal notranslate"><span class="pre">dict</span></code> or
+Pandas <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> and returns a transformed version of either of these types:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span>
+<span class="n">Data</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">data_transformer</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Data</span><span class="p">:</span>
+    <span class="c1"># Transform and return the data</span>
+    <span class="k">return</span> <span class="n">transformed_data</span>
+</pre></div>
+</div>
+<div class="section" id="built-in-data-transformers">
+<h2>Built-in data transformers<a class="headerlink" href="#built-in-data-transformers" title="Permalink to this headline">¶</a></h2>
+<p>Altair includes a default set of data transformers with the following signatures.</p>
+<p>Raise a <code class="docutils literal notranslate"><span class="pre">MaxRowsError</span></code> if a Dataframe has more than <code class="docutils literal notranslate"><span class="pre">max_rows</span></code> rows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">limit_rows</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">max_rows</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Randomly sample a DataFrame (without replacement) before visualizing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sample</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frac</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Convert a Dataframe to a separate <code class="docutils literal notranslate"><span class="pre">.json</span></code> file before visualization:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">to_json</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;altair-data&#39;</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>Convert a Dataframe to a separate <code class="docutils literal notranslate"><span class="pre">.csv</span></code> file before visualiztion:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">to_csv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;altair-data&#39;</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>Convert a Dataframe to inline JSON values before visualization:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">to_values</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="piping">
+<h2>Piping<a class="headerlink" href="#piping" title="Permalink to this headline">¶</a></h2>
+<p>Multiple data transformers can be piped together using <code class="docutils literal notranslate"><span class="pre">pipe</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">altair</span> <span class="k">import</span> <span class="n">pipe</span><span class="p">,</span> <span class="n">limit_rows</span><span class="p">,</span> <span class="n">to_values</span>
+<span class="n">pipe</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">limit_rows</span><span class="p">(</span><span class="mi">10000</span><span class="p">),</span> <span class="n">to_values</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="managing-data-transformers">
+<h2>Managing data transformers<a class="headerlink" href="#managing-data-transformers" title="Permalink to this headline">¶</a></h2>
+<p>Altair maintains a registry of data transformers, which includes a default
+data transformer that is automatically applied to all Dataframes before rendering.</p>
+<p>To see the registered transformers:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">altair</span> <span class="k">as</span> <span class="nn">alt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alt</span><span class="o">.</span><span class="n">data_transformers</span><span class="o">.</span><span class="n">names</span><span class="p">()</span>
+<span class="go">[&#39;default&#39;, &#39;json&#39;, &#39;csv&#39;]</span>
+</pre></div>
+</div>
+<p>The default data transformer is the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">default_data_transformer</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">pipe</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">limit_rows</span><span class="p">,</span> <span class="n">to_values</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">json</span></code> and <code class="docutils literal notranslate"><span class="pre">csv</span></code> data transformers will save a Dataframe to a temporary
+<code class="docutils literal notranslate"><span class="pre">.json</span></code> or <code class="docutils literal notranslate"><span class="pre">.csv</span></code> file before rendering. There are a number of performance
+advantages to these two data transformers:</p>
+<ul class="simple">
+<li>The full dataset will not be saved in the notebook document.</li>
+<li>The performance of the Vega-Lite/Vega JavaScript appears to be better
+for standalone JSON/CSV files than for inline values.</li>
+</ul>
+<p>There are disadvantages of the JSON/CSV data transformers:</p>
+<ul class="simple">
+<li>The Dataframe will be exported to a temporary <code class="docutils literal notranslate"><span class="pre">.json</span></code> or <code class="docutils literal notranslate"><span class="pre">.csv</span></code>
+file that sits next to the notebook.</li>
+<li>That notebook will not be able to re-render the visualization without
+that temporary file (or re-running the cell).</li>
+</ul>
+<p>In our experience, the performance improvement is significant enough that
+we recommend using the <code class="docutils literal notranslate"><span class="pre">json</span></code> data transformer for any large datasets:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">alt</span><span class="o">.</span><span class="n">data_transformers</span><span class="o">.</span><span class="n">enable</span><span class="p">(</span><span class="s1">&#39;json&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We hope that others will write additional data transformers - imagine a
+transformer which saves the dataset to a JSON file on S3, which could
+be registered and enabled as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">alt</span><span class="o">.</span><span class="n">data_transformers</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">&#39;s3&#39;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="n">pipe</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">to_s3</span><span class="p">(</span><span class="s1">&#39;mybucket&#39;</span><span class="p">)))</span>
+<span class="n">alt</span><span class="o">.</span><span class="n">data_transformers</span><span class="o">.</span><span class="n">enable</span><span class="p">(</span><span class="s1">&#39;s3&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="API.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../gallery/geo_interface.html" class="btn btn-neutral" title="Working with __geo_interface__" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, ilia timofeev.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@3"></script>
+      <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@2"></script>
+      <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@3"></script>
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

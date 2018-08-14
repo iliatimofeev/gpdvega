@@ -15,7 +15,7 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-
+import gpdvega
 
 # -- Project information -----------------------------------------------------
 
@@ -23,10 +23,11 @@ project = 'gpdvega'
 copyright = '2018, ilia timofeev'
 author = 'ilia timofeev'
 
-# The short X.Y version
-version = ''
+
 # The full version, including alpha/beta/rc tags
-release = '0.1'
+release = gpdvega.__version__
+# The short X.Y version
+version = '.'.join(gpdvega.__version__.split('.')[:2])
 
 
 # -- General configuration ---------------------------------------------------
@@ -45,9 +46,12 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
+    'numpydoc.numpydoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'altair.sphinxext.altairplot',
 ]
+altair_plot_links = {'editor': True, 'source': False, 'export': False}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -95,6 +99,11 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+
+def setup(app):
+    app.add_stylesheet('theme_overrides.css')
+    app.add_stylesheet('custom.css')
+#    app.add_stylesheet('syntax.css')
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #

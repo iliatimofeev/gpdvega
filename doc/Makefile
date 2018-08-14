@@ -2,7 +2,7 @@
 #
 
 # You can set these variables from the command line.
-SPHINXOPTS    = -b coverage
+SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = gpdvega
 SOURCEDIR     = source
