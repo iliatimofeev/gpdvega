@@ -10,13 +10,17 @@ except ImportError:
     from distutils.core import setup
 
 LONG_DESCRIPTION = """
-``gpdvega`` is a bridge between GeoPandas_ a geospatial extension of Pandas_ 
+'gpdvega' is a bridge between GeoPandas_ a geospatial extension of Pandas_ 
 and the declarative statistical visualization library Altair_, 
 which allows to seamlessly chart geospatial data.
 The source is available on `GitHub <https://github.com/iliatimofeev/gpdvega>`_. 
+
+See the `gpdvega Documentation`_ 
+
 .. _Pandas: http://pandas.pydata.org/
 .. _GeoPandas: http://geopandas.org/
 .. _Altair: http://altair-viz.github.io/
+.. _gpdvega Documentation: https://iliatimofeev.github.io/gpdvega/
 """
 
 
