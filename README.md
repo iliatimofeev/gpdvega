@@ -25,7 +25,7 @@ alt.Chart(world[world.continent!='Antarctica']).mark_geoshape(
 )
 ~~~
 
-![output](docs/_static/word_pop_est.png)
+![output](https://iliatimofeev.github.io/gpdvega/_static/world_pop_est.png)
 
 ## Install
 
@@ -33,20 +33,14 @@ alt.Chart(world[world.continent!='Antarctica']).mark_geoshape(
 
 gpdvega requires:
 
-- Altair (>= 2.1.0 )
+- Altair (>= 2.2.0 )
 - GeoPandas (>= 0.4.0)
 
 ### User installation
 
-not yet ready
+using `pip`
 
-> using `pip`
->
->     pip install gpdvega
->
-> or `conda`
->
->     conda install gpdvega
+   pip install gpdvega
 
 ### Changelog
 
