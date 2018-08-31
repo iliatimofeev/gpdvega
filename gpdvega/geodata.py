@@ -80,7 +80,7 @@ def gpd_to_json(data):
 
 alt.data_transformers.register(
     'gpd_to_values',
-    lambda data: alt.pipe(data, alt.limit_rows, gpd_to_values)
+    lambda data: alt.pipe(data, gpd_to_values)
 )
 alt.data_transformers.register(
     'gpd_to_json',
