@@ -94,7 +94,7 @@ def gpd_to_json_data_transformer(data, max_rows=5000):
 
 alt.data_transformers.register(
     'gpd_to_json',
-    gpd_to_values_data_transformer
+    gpd_to_json_data_transformer
 )
 
 
