@@ -78,14 +78,25 @@ def gpd_to_json(data):
         return alt.to_json(data)
 
 
+def gpd_to_values_data_transformer(data, max_rows=5000):
+    return alt.pipe(data, alt.limit_rows(max_rows=max_rows), gpd_to_values)
+
+
 alt.data_transformers.register(
     'gpd_to_values',
-    lambda data: alt.pipe(data, alt.limit_rows, gpd_to_values)
+    gpd_to_values_data_transformer
 )
+
+
+def gpd_to_json_data_transformer(data, max_rows=5000):
+    return alt.pipe(data, alt.limit_rows(max_rows=max_rows), gpd_to_json)
+
+
 alt.data_transformers.register(
     'gpd_to_json',
-    lambda data: alt.pipe(data, alt.limit_rows, gpd_to_json)
+    gpd_to_values_data_transformer
 )
+
 
 alt.data_transformers.enable('gpd_to_values')
 
