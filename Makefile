@@ -4,7 +4,7 @@ install:
 	python setup.py install
 
 test :
-	python -m pytest --pyargs --doctest-modules gpdvega
+	flake8 ./&&python -m pytest --pyargs --doctest-modules gpdvega
 
 
 test-coverage:

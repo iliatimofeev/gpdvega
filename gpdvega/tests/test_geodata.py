@@ -96,16 +96,16 @@ def geojson2gdp(obj):
 def test_default_pipe():
     assert(alt.data_transformers.active == 'gpd_to_values')
 
+
 def test_max_rows_pipe():
-    alt.data_transformers.enable('gpd_to_values',max_rows=1)
+    alt.data_transformers.enable('gpd_to_values', max_rows=1)
     data = geojson2gdp(_create_geojson())
     with pytest.raises(alt.MaxRowsError):
         data = alt.pipe(data, alt.data_transformers.get())
-    alt.data_transformers.enable('gpd_to_json',max_rows=1)
+    alt.data_transformers.enable('gpd_to_json', max_rows=1)
     with pytest.raises(alt.MaxRowsError):
         data = alt.pipe(data, alt.data_transformers.get())
     alt.data_transformers.enable('gpd_to_values')
-
 
 
 # to_values
