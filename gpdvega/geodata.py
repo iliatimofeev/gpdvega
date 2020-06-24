@@ -3,7 +3,7 @@ import geopandas as gpd
 import six
 import json
 import warnings
-from toolz.curried import curry
+from toolz.curried import curry, pipe
 
 
 def geopandas_to_dict(data):
@@ -80,11 +80,11 @@ def gpd_to_json(data):
 
 alt.data_transformers.register(
     'gpd_to_values',
-    lambda data: alt.pipe(data, alt.limit_rows, gpd_to_values)
+    lambda data: pipe(data, alt.limit_rows, gpd_to_values)
 )
 alt.data_transformers.register(
     'gpd_to_json',
-    lambda data: alt.pipe(data, alt.limit_rows, gpd_to_json)
+    lambda data: pipe(data, alt.limit_rows, gpd_to_json)
 )
 
 alt.data_transformers.enable('gpd_to_values')
